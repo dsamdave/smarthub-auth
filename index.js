@@ -1,5 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const mongoose = require("mongoose")
 const { status } = require("express/lib/response");
 const { validateRegister } = require("./middlewares/validateRegister");
 
@@ -10,6 +11,17 @@ const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 8080;
+
+
+// Database
+
+
+mongoose.connect("mongodb+srv://dsamdave:dsamdave@cluster0.86gnnbo.mongodb.net")
+
+.then(()=> console.log("MongoDB Database connected!"))
+
+
+
 
 // C R U D
 // CREATE READ UPDATE DELETE
