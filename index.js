@@ -1,7 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose")
-const { status } = require("express/lib/response");
 const { validateRegister } = require("./middlewares/validateRegister");
 const Product = require("./models/productSchema");
 
@@ -16,8 +15,8 @@ const PORT = process.env.PORT || 8080;
 
 // Database
 
-
-mongoose.connect("mongodb+srv://dsamdave:dsamdave@cluster0.86gnnbo.mongodb.net")
+const DB_URL = process.env.MONGODB_URL
+mongoose.connect(`${DB_URL}`)
 
 .then(()=> console.log("MongoDB Database connected!"))
 
