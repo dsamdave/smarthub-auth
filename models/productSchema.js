@@ -3,10 +3,10 @@ const { type } = require("express/lib/response")
 const mongoose = require("mongoose")
 
 const productSchema = new mongoose.Schema({
-    title: { type: String, require: true },
-    price: {type: Number, require: true },
+    title: { type: String, required: true },
+    price: {type: Number, required: true },
     desc: { type: String },
-    image: {type: String, require: true }
+    image: {type: String, required: true }
 })
 
 

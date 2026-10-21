@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose")
 const { status } = require("express/lib/response");
 const { validateRegister } = require("./middlewares/validateRegister");
+const Product = require("./models/productSchema");
 
 dotenv.config();
 
@@ -21,7 +22,44 @@ mongoose.connect("mongodb+srv://dsamdave:dsamdave@cluster0.86gnnbo.mongodb.net")
 .then(()=> console.log("MongoDB Database connected!"))
 
 
-// 
+// Test API
+
+// get all Products 
+
+app.get("/all-products", async (req, res)=>{
+
+  const allProducts = await Product.find()
+
+
+  return res.status(200).json({
+    status: true,
+    message: "All products retrieved",
+    data: allProducts
+  })
+
+
+})
+
+
+
+// Post one Product
+
+
+app.post("/create-product", async (req, res)=>{
+
+  const { title, price, desc, image } = req.body
+
+  const newProduct = new Product({ title, price, desc, image })
+
+  await newProduct.save()
+
+  return res.status(200).json({
+    status: true,
+    message: "product saved successfully",
+    data: null 
+  })
+
+})
 
 
 
