@@ -1,7 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const mongoose = require("mongoose")
-const { validateRegister } = require("./middlewares/validateRegister");
+const mongoose = require("mongoose");
 const Product = require("./models/productSchema");
 
 dotenv.config();
@@ -12,170 +11,133 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 8080;
 
-
 // Database
 
-const DB_URL = process.env.MONGODB_URL
-mongoose.connect(`${DB_URL}`)
+const DB_URL = process.env.MONGODB_URL;
+mongoose
+  .connect(`${DB_URL}`)
 
-.then(()=> console.log("MongoDB Database connected!"))
-
-
-// Test API
-
-// get all Products 
-
-app.get("/all-products", async (req, res)=>{
-
-  const allProducts = await Product.find()
-
-
-  return res.status(200).json({
-    status: true,
-    message: "All products retrieved",
-    data: allProducts
-  })
-
-
-})
-
-
-
-// Post one Product
-
-
-app.post("/create-product", async (req, res)=>{
-
-  const { title, price, desc, image } = req.body
-
-  const newProduct = new Product({ title, price, desc, image })
-
-  await newProduct.save()
-
-  return res.status(200).json({
-    status: true,
-    message: "product saved successfully",
-    data: null 
-  })
-
-})
-
-
+  .then(() => console.log("MongoDB Database connected!"));
 
 // C R U D
-// CREATE READ UPDATE DELETE
 
-// Register
-app.post("/register", validateRegister, (req, res) => {
-  try {
+// Create
 
-    console.log("Entered!!")
-    const { firstName, lastName, email, password } = req.body;
+app.post("/create-product", async (req, res) => {
+  const { title, price, desc, image } = req.body;
 
-    // Validate
+  const newProduct = new Product({ title, price, desc, image });
 
+  await newProduct.save();
 
-    // Validate the User
-
-    // hash the password
-
-    // Create a new User in our Schema
-
-    // save user on database
-
-    // Send verification email
-
-    // Send a response back
-    return res.status(201).json({
-      status: true,
-      message: "User created successfully",
-      data: {
-        email,
-        firstName,
-        lastName,
-      },
-    });
-  } catch (error) {
-    res.status(500).json(error);
-  }
+  return res.status(200).json({
+    status: true,
+    message: "Product created successfully",
+    data: null,
+  });
 });
 
-// Login
-app.post("/login", (req, res) => {
+// Read
+
+app.get("/all-products", async (req, res) => {
+  const allProducts = await Product.find();
+
+  return res.status(200).json({
+    status: true,
+    message: "All products returned successfully",
+    data: allProducts,
+  });
+});
+
+app.get("/product/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const oneProduct = await Product.findById(id);
+
+  return res.status(200).json({
+    status: true,
+    message: "Product returned successfully",
+    data: oneProduct,
+  });
+});
+
+// Delete Request
+
+app.delete("/delete-product/:id", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { id } = req.params;
 
-    // validate the data
-
-    // validate the user
-
-    // validate the password
-
-    // Generate tokens
-
-    // send response
+    await Product.findByIdAndDelete(id);
 
     return res.status(200).json({
       status: true,
-      message: "User login successful",
-      data: {
-        accessToken: null,
-        user: { email },
-      },
-    });
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
-// Forgot Password
-app.post("/forgot-password", (req, res) => {
-  try {
-    const { email } = req.body;
-
-    // validate data
-
-    // validate user
-
-    // Create Access Token
-
-    // Attach the accesstoken to link
-
-    // Send User an Email
-
-    return res.status(200).json({
-      status: true,
-      message: "Please check your email",
+      message: "Product deleted successfully",
       data: null,
     });
+
   } catch (error) {
-    res.status(500).json(error.message);
+    return res.status(500).json({ message: error.message });
   }
 });
 
-// Reset Password
-app.patch("/reset-password", (req, res) => {
-  try {
-    const { accessToken, password } = req.body;
 
-    // validate & decode
+// PUT REQUEST
 
-    // find User
+app.put("/update-product/:id", async(req, res)=>{
 
-    // hash new password
+    const { id } = req.params
+    const { title, price, desc, image } = req.body
 
-    // save the new password
+    const updatedProduct = await Product.findByIdAndUpdate(
+        id,
 
-    // return res
+        { title, price, desc, image },
+
+        { new: true }
+
+    )
+
     return res.status(200).json({
-      status: true,
-      message: "Password reset successful",
-      data: null,
-    });
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
+        status: true,
+        message: "Product updated, successfully",
+        data: null
+    })
+})
+
+
+
+
+// PATCH REQUEST
+
+app.patch("/update-part-product/:id", async(req, res)=>{
+
+    const { id } = req.params
+    const { title, price } = req.body
+
+    const product = await Product.findById(id)
+
+    if(product){
+        // update
+
+        product.title = title 
+        product.price = price 
+
+        await product.save()
+
+    }
+
+
+    return res.status(200).json({
+        status: true,
+        message: "Product updated",
+        data: null
+
+    })
+
+})
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Server Started Running ${PORT}`);
