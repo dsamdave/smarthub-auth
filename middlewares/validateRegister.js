@@ -32,11 +32,35 @@ const validateRegister = (req, res, next) => {
     });
 
 
-    console.log("Done with Middleware")
+    // console.log("Done with Middleware")
+
+    next()
+
+};
+
+const validateLogin = (req, res, next) => {
+
+  
+
+  const { email, password } = req.body;
+
+  if (!email)
+    return res.status(400).json({
+      status: false,
+      message: "Please enter email",
+      data: null,
+    });
+  if (!password)
+    return res.status(400).json({
+      status: false,
+      message: "Please enter password",
+      data: null,
+    });
+
 
     next()
 
 };
 
 
-module.exports = { validateRegister }
+module.exports = { validateRegister, validateLogin }
